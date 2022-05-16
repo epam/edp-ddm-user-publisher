@@ -1,0 +1,120 @@
+{{- if eq .Values.deploy true }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Values.data.jobName }}
+  labels:
+    name: {{ .Values.data.jobName }}
+    app: user-publisher
+spec:
+  template:
+    metadata:
+      labels:
+        name: {{ .Values.data.jobName }}
+        app: user-publisher
+    spec:
+      serviceAccountName: {{ .Values.serviceAccount.name }}
+      restartPolicy: Never
+      containers:
+        - name: publish-users-job
+          image: "{{ .Values.image.name }}:{{ .Values.image.tag }}"
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - '-c'
+            - >-
+              java -jar app.jar --id=$id --USER_ACCESS_TOKEN='user_access_token' --REQUEST_ID='1' 
+          env:
+            - name: USER_IMPORT_CEPH_HTTP_ENDPOINT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.data.userImportConfigMapName }}
+                  key: {{ .Values.data.cephHost }}
+            - name: USER_IMPORT_ARCHIVE_CEPH_HTTP_ENDPOINT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.data.userImportArchiveConfigMapName }}
+                  key: {{ .Values.data.cephHost }}
+            - name: USER_IMPORT_CEPH_BUCKET_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.data.userImportConfigMapName }}
+                  key: {{ .Values.data.bucketName }}
+            - name: USER_IMPORT_ARCHIVE_CEPH_BUCKET_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.data.userImportArchiveConfigMapName }}
+                  key: {{ .Values.data.bucketName }}
+            - name: USER_IMPORT_CEPH_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.publisher.secrets.userImportCephBucket.secretName }}
+                  key: {{ .Values.publisher.secrets.userImportCephBucket.accessKey }}
+            - name: USER_IMPORT_ARCHIVE_CEPH_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.publisher.secrets.userImportArchiveCephBucket.secretName }}
+                  key: {{ .Values.publisher.secrets.userImportArchiveCephBucket.accessKey }}
+            - name: USER_IMPORT_CEPH_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.publisher.secrets.userImportCephBucket.secretName }}
+                  key: {{ .Values.publisher.secrets.userImportCephBucket.secretKey }}
+            - name: USER_IMPORT_ARCHIVE_CEPH_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.publisher.secrets.userImportArchiveCephBucket.secretName }}
+                  key: {{ .Values.publisher.secrets.userImportArchiveCephBucket.secretKey }}
+            - name: id
+              value: {{ .Values.id | squote }}
+            - name: KEYCLOAK_URL
+              value: {{ .Values.keycloak.keycloakUrl }}
+            - name: CLIENT_ID
+              value: {{ .Values.keycloak.keycloakClientId }}
+            - name: CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.keycloak.secret.secretName }}
+                  key: {{ .Values.keycloak.secret.clientSecret }}
+            - name: KEYCLOAK_REALM
+              value: "{{ include "keycloak.officerRealm" . }}"
+            - name: BATCH_SIZE
+              value: "{{ .Values.data.batchSize }}"
+            - name: OPENSHIFT_NAMESPACE
+              value: {{ .Values.namespace }}
+            - name: OPENSHIFT_JOB
+              value: {{ .Values.data.jobName }}
+            - name: OPENSHIFT_RESULT_FIELD
+              value: link
+              
+            - name: KAFKA_BOOTSTRAP
+              value: {{ .Values.kafka.service }}
+            - name: AUDIT_TOPIC
+              value: {{ .Values.audit.kafka.topic }}
+            - name: SCHEMA_REGISTRY_URL
+              value: {{ .Values.audit.kafka.schemaRegistryUrl }}
+            - name: SSL_ENABLED
+              value: "{{ .Values.kafka.sslEnabled }}"
+            - name: SSL_USER_CERTIFICATE
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.kafka.user }}
+                  key: user.crt
+            - name: SSL_USER_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.kafka.user }}
+                  key: user.key
+            - name: SSL_CLUSTER_CERTIFICATE
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Values.kafka.clusterName }}-cluster-ca-cert
+                  key: ca.crt
+            - name: VAULT_URI
+              value: http://hashicorp-vault.{{ .Values.namespace }}.svc:8200
+            - name: VAULT_KEY
+              value: {{ .Values.vault.key }}
+            - name: VAULT_DECRYPTION_ROLE
+              value: {{ .Values.vault.decryptionRole }}
+
+{{- end }}

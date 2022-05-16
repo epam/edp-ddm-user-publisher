@@ -1,0 +1,17 @@
+[
+  {
+    "id": "f3a8c92b-332d-4a6e-b47e-17f5281ef8e5",
+    "name": "head-officer",
+    "composite": false,
+    "clientRole": false,
+    "containerId": "9b5c2d9e-ff35-4f29-bd09-14bcfda01251"
+  },
+  {
+    "id": "0e3af373-f53a-499c-b2fb-d744e9c00ef2",
+    "name": "officer",
+    "description": "",
+    "composite": false,
+    "clientRole": false,
+    "containerId": "9b5c2d9e-ff35-4f29-bd09-14bcfda01251"
+  }
+]

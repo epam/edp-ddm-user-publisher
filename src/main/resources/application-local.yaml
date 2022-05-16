@@ -1,0 +1,52 @@
+user-import-ceph:
+  http-endpoint: ceph_url
+  access-key: access-key
+  secret-key: secret-key
+  bucket: user-import
+
+user-import-archive-ceph:
+  http-endpoint: ceph_url
+  access-key: access-key
+  secret-key: secret-key
+  bucket: user-import-archive
+
+keycloak:
+  url: keycloak_url
+  realm: realm
+  clientId: import-users-job
+  clientSecret: clientSecret
+  batchSize: 100
+
+user:
+  access-token: user_access_token
+
+jobinfo:
+  requestId: 11111111-1111-1111-1111-111111111111
+
+audit:
+  kafka:
+    bootstrap: localhost:9092
+    topic: audit-events
+    schema-registry-url: http://localhost:8081
+    ssl:
+      enabled: false
+
+spring:
+  cloud:
+    vault:
+      uri: vault_uri
+      authentication: KUBERNETES
+      kubernetes:
+        role: user-publisher-job-decryption-only-role
+        service-account-token-file: /tmp/token
+vault:
+  key: registry-regulation-management-encryption-key
+
+logging:
+  level:
+    root: info
+
+feign:
+  client:
+    config:
+      default.loggerLevel: BASIC
