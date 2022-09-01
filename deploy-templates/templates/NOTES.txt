@@ -1,0 +1,1 @@
+1. Application user-publisher has been successfully deployed!!

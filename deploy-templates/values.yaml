@@ -1,0 +1,123 @@
+# Default values for user-publisher.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+image:
+  repository: user-publisher
+  name: user-publisher-master
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: 1.7.0.18
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+deploy: true
+
+Role:
+  type: Role
+  name: user-publisher-role
+RoleBinding:
+  type: RoleBinding
+  name: user-publisher-role
+
+publisher:
+  secrets:
+    userImportCephBucket:
+      secretName: user-import
+      accessKey: AWS_ACCESS_KEY_ID
+      secretKey: AWS_SECRET_ACCESS_KEY
+    userImportArchiveCephBucket:
+      secretName: user-import-archive
+      accessKey: AWS_ACCESS_KEY_ID
+      secretKey: AWS_SECRET_ACCESS_KEY
+
+id: ""
+
+data:
+  jobName: publish-users-job
+  userImportConfigMapName: user-import
+  userImportArchiveConfigMapName: user-import-archive
+  cephHost: BUCKET_HOST
+  bucketName: BUCKET_NAME
+  batchSize: 10
+
+keycloak:
+  keycloakUrl: "http://keycloak-headless.user-management.svc:8080"
+  officerRealmName: "officer-portal"
+  keycloakClientId: import-users-job
+  secret:
+    secretName: keycloak-realm-officer-import-users-client-secret
+    clientSecret: clientSecret
+
+vault:
+  key: registry-regulation-management-encryption-key
+  decryptionRole: user-publisher-job-decryption-only-role
+  
+kafka:
+  service: kafka-cluster-kafka-bootstrap:9093
+  user: user-publisher-user
+  clusterName: kafka-cluster
+  sslEnabled: true
+  
+audit:
+  kafka:
+    topic: audit-events
+    schemaRegistryUrl: http://kafka-schema-registry:8081
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: user-publisher
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+  # gsGroup
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  host: user-publisher
+  path: "/"
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

@@ -1,0 +1,65 @@
+spring:
+  application:
+    name: user-publisher
+  cloud:
+    vault:
+      uri: ${VAULT_URI}
+      authentication: KUBERNETES
+      kubernetes:
+        role: ${VAULT_DECRYPTION_ROLE}
+vault:
+  key: ${VAULT_KEY}
+        
+user-import-ceph:
+  http-endpoint: ${USER_IMPORT_CEPH_HTTP_ENDPOINT}
+  bucket: ${USER_IMPORT_CEPH_BUCKET_NAME}
+  access-key: ${USER_IMPORT_CEPH_ACCESS_KEY}
+  secret-key: ${USER_IMPORT_CEPH_SECRET_KEY}
+
+user-import-archive-ceph:
+  http-endpoint: ${USER_IMPORT_ARCHIVE_CEPH_HTTP_ENDPOINT}
+  bucket: ${USER_IMPORT_ARCHIVE_CEPH_BUCKET_NAME}
+  access-key: ${USER_IMPORT_ARCHIVE_CEPH_ACCESS_KEY}
+  secret-key: ${USER_IMPORT_ARCHIVE_CEPH_SECRET_KEY}
+
+s3:
+  config:
+    client:
+      protocol: http
+    options:
+      pathStyleAccess: true
+
+keycloak:
+  url: ${KEYCLOAK_URL}
+  realm: ${KEYCLOAK_REALM}
+  clientId: ${CLIENT_ID}
+  clientSecret: ${CLIENT_SECRET}
+  batchSize: ${BATCH_SIZE}
+  
+user:
+  access-token: ${USER_ACCESS_TOKEN}
+
+jobinfo:
+  requestId: ${REQUEST_ID}
+  hostname: publish-users-job
+    
+audit:
+  kafka:
+    bootstrap: ${KAFKA_BOOTSTRAP}
+    topic: ${AUDIT_TOPIC}
+    schema-registry-url: ${SCHEMA_REGISTRY_URL}
+    ssl:
+      enabled: ${SSL_ENABLED}
+      keystore-certificate: ${SSL_USER_CERTIFICATE}
+      keystore-key: ${SSL_USER_KEY}
+      truststore-certificate: ${SSL_CLUSTER_CERTIFICATE}
+          
+logging:
+  config: classpath:log4j2-json-console.xml
+  level:
+    com.epam.digital.data.platform.user.feign.KeycloakClient: DEBUG
+
+feign:
+  client:
+    config:
+      default.loggerLevel: BASIC

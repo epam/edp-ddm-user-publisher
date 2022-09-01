@@ -1,0 +1,19 @@
+{
+  "overwritten": 0,
+  "added": 1,
+  "skipped": 1,
+  "results": [
+    {
+      "action": "SKIPPED",
+      "resourceType": "USER",
+      "resourceName": "c0ab3771f5cd55655855c6b13d919e1bca19d08e6b345064025c05bbd574f802",
+      "id": "2ce16598-2e1f-4ada-8759-12bdf9a390b5"
+    },
+    {
+      "action": "ADDED",
+      "resourceType": "USER",
+      "resourceName": "9d57e74a81d1220a6fbb8bbafa3fa4b4236ac64cd42b165d473ab565d9132db3",
+      "id": "5d107a36-b9e9-406e-b4c3-d1c48933222e"
+    }
+  ]
+}
