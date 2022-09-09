@@ -17,6 +17,7 @@
 package com.epam.digital.data.platform.user.audit;
 
 import static com.epam.digital.data.platform.starter.audit.model.EventType.SYSTEM_EVENT;
+import static com.epam.digital.data.platform.user.model.CsvUser.KATOTTG;
 import static com.epam.digital.data.platform.user.util.Constants.USER_CREATE_EVENT_NAME;
 
 import com.epam.digital.data.platform.starter.audit.model.AuditEvent;
@@ -72,16 +73,16 @@ public class UserImportAuditFacade extends AbstractAuditFacade {
 
     for (Result result : response.getResults()) {
       if (result.getAction().equals("ADDED")) {
-        var roles = usersMap.get(result.getResourceName()).getRealmRoles();
-        auditService.sendAudit(createAuditEvent(result, roles, fileObject));
+        var user = usersMap.get(result.getResourceName());
+        auditService.sendAudit(createAuditEvent(result, user, fileObject));
       }
     }
   }
 
-  private AuditEvent createAuditEvent(Result result, List<String> roles, FileObject fileObject) {
+  private AuditEvent createAuditEvent(Result result, User user, FileObject fileObject) {
     return createBaseAuditEvent(SYSTEM_EVENT, USER_CREATE_EVENT_NAME, requestId)
         .setSourceInfo(getAuditSourceInfo())
-        .setContext(createContext(result, roles, fileObject))
+        .setContext(createContext(result, user, fileObject))
         .setUserInfo(userInfoProvider.getUserInfo())
         .build();
   }
@@ -93,17 +94,17 @@ public class UserImportAuditFacade extends AbstractAuditFacade {
         .build();
   }
 
-  private Map<String, Object> createContext(Result result, List<String> roles,
-      FileObject fileObject) {
+  private Map<String, Object> createContext(Result result, User user, FileObject fileObject) {
     Map<String, Object> context = new HashMap<>();
     putIfNotNull(context, "userId", result.getId());
     putIfNotNull(context, "username", result.getResourceName());
+    putIfNotNull(context, "katottg", user.getAttributes().get(KATOTTG));
     putIfNotNull(context, "enabled", true);
     putIfNotNull(context, "realmId", realmInfoProvider.getRealmId());
     putIfNotNull(context, "realmName", realmInfoProvider.getRealmName());
     putIfNotNull(context, "clientId", clientInfoProvider.getClientId());
     putIfNotNull(context, "keycloakClientId", clientInfoProvider.getKeycloakClientId());
-    putIfNotNull(context, "roles", roles);
+    putIfNotNull(context, "roles", user.getRealmRoles());
     putIfNotNull(context, "sourceFileId", fileObject.getId());
     putIfNotNull(context, "sourceFileName", fileObject.getFileName());
     putIfNotNull(context, "sourceFileSHA256Checksum", fileObject.getChecksum());

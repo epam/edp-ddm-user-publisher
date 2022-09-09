@@ -16,7 +16,7 @@
 
 package com.epam.digital.data.platform.user.config;
 
-import com.epam.digital.data.platform.user.model.CsvUser;
+import com.epam.digital.data.platform.user.service.CsvParser.CsvMap;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
@@ -41,7 +41,7 @@ public class GenericConfig {
   ObjectReader csvMapper() {
     var mapper = new CsvMapper();
     return mapper.enable(CsvParser.Feature.TRIM_SPACES)
-        .readerFor(CsvUser.class)
+        .readerFor(CsvMap.class)
         .with(CsvSchema.emptySchema()
             .withHeader()
             .withColumnSeparator(';')

@@ -110,6 +110,9 @@ public class UserPublishingService {
     // remove users to be skipped
     List<EnumerableUser> enumerableUsers = userService.convertToEnumerableUsers(users);
     var filteredUsers = removeUsersToBeSkipped(enumerableUsers, usersToBeSkipped.keySet());
+    
+    // collapse KATOTTG codes to prefixes
+    statistics.addCollapsedKatottg(userService.collapseKatottg(filteredUsers));
 
     // import users
     statistics.addStatistics(importUsers(fileObject, filteredUsers));
@@ -206,8 +209,10 @@ public class UserPublishingService {
   private void printStatistics(Statistics statistics) {
     log.info(
         "The file has been processed. Total users in file: {}. Successfully imported: {}. " 
-            + "Skipped: {}. Failed to import: {}", 
+            + "Skipped: {}. Failed to import: {}. KATOTTG codes which are already included in the " 
+            + "higher levels of code were detected and removed in the following rows: {}", 
         statistics.getTotalNumberOfUsers(), statistics.getImportedUsers(), 
-        statistics.getSkippedUsers(), statistics.getNotImportedUsers());
+        statistics.getSkippedUsers(), statistics.getNotImportedUsers(), 
+        statistics.getCollapsedKatottg());
   }
 }

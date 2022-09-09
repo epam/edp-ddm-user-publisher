@@ -16,6 +16,7 @@
 
 package com.epam.digital.data.platform.user.service;
 
+import static com.epam.digital.data.platform.user.model.CsvUser.KATOTTG;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -32,7 +33,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {GenericConfig.class, UserService.class})
+@ContextConfiguration(classes = {GenericConfig.class, UserService.class, CsvParser.class})
 class UserServiceTest {
 
   @Autowired
@@ -46,7 +47,7 @@ class UserServiceTest {
   }
 
   @Test
-  void happyPath() {
+  void shouldDeserializeCsvTo5Users() {
     var csv = new String(content, StandardCharsets.UTF_8);
 
     var users = userService.getCsvUsers(csv);
@@ -55,8 +56,8 @@ class UserServiceTest {
   }
 
   @Test
-  void shouldDeleteUtf8BomAndParseSuccessfully() {
-    byte[] contentWithBom = addUtf8Bom(content);
+  void shouldDeleteManyUtf8BomAndParseSuccessfully() {
+    byte[] contentWithBom = addUtf8Bom(addUtf8Bom(addUtf8Bom(addUtf8Bom(content))));
     var csv = new String(contentWithBom, StandardCharsets.UTF_8);
 
     var users = userService.getCsvUsers(csv);
@@ -66,8 +67,8 @@ class UserServiceTest {
 
   @Test
   void shouldConvertIOExceptionToMappingExceptionWhenFailToParseCsv() {
-    byte[] contentWith2Boms = addUtf8Bom(addUtf8Bom(content));
-    var csv = new String(contentWith2Boms, StandardCharsets.UTF_8);
+    byte[] corruptedContent = new byte[]{};
+    var csv = new String(corruptedContent, StandardCharsets.UTF_8);
 
     assertThrows(MappingException.class, () -> userService.getCsvUsers(csv));
   }
@@ -95,6 +96,45 @@ class UserServiceTest {
       assertThat(enumerableUsers.get(i).getSerialNumber()).isEqualTo(i);
       assertThat(enumerableUsers.get(i).getUsername()).isEqualTo(users.get(i).getUsername());
     }
+  }
+
+  @Test
+  void shouldCollapseKoatottgColdesToPrefixes() {
+    byte[] content = TestUtils.getContent("json/users-katottg.csv")
+        .getBytes(StandardCharsets.UTF_8);
+    var csv = new String(content, StandardCharsets.UTF_8);
+    var csvUsers = userService.getCsvUsers(csv);
+    var users = userService.convertToKeycloakUsers(csvUsers);
+    var enumerableUsers = userService.convertToEnumerableUsers(users);
+
+    userService.collapseKatottg(enumerableUsers);
+
+    assertThat(enumerableUsers).hasSize(5);
+    assertThat(enumerableUsers.get(0).getAttributes().get(KATOTTG)).containsExactly("UA03");
+    assertThat(enumerableUsers.get(1).getAttributes().get(KATOTTG)).containsExactly("UA04",
+        "UA0502");
+    assertThat(enumerableUsers.get(2).getAttributes().get(KATOTTG)).containsExactly("UA0702001");
+    assertThat(enumerableUsers.get(3).getAttributes().get(KATOTTG)).containsExactly("UA");
+    assertThat(enumerableUsers.get(4).getAttributes().get(KATOTTG)).isNull();
+  }
+
+  @Test
+  void shouldReadCustomAttributes() {
+    byte[] content = TestUtils.getContent("json/users-custom-attributes.csv")
+        .getBytes(StandardCharsets.UTF_8);
+    var csv = new String(content, StandardCharsets.UTF_8);
+    var csvUsers = userService.getCsvUsers(csv);
+    var users = userService.convertToKeycloakUsers(csvUsers);
+    var enumerableUsers = userService.convertToEnumerableUsers(users);
+
+    userService.collapseKatottg(enumerableUsers);
+
+    assertThat(enumerableUsers).hasSize(5);
+    assertThat(enumerableUsers.get(0).getAttributes().get("ABC")).containsExactly("11", "abc", "ee");
+    assertThat(enumerableUsers.get(1).getAttributes().get("ABC")).containsExactly("aa");
+    assertThat(enumerableUsers.get(2).getAttributes().get("ABC")).containsExactly("bb", "cc", "dd");
+    assertThat(enumerableUsers.get(3).getAttributes().get("ABC")).containsExactly("a", "b", "c", "d");
+    assertThat(enumerableUsers.get(4).getAttributes().get("ABC")).isNull();
   }
 
   private byte[] addUtf8Bom(byte[] content) {

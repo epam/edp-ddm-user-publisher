@@ -16,12 +16,16 @@
 
 package com.epam.digital.data.platform.user.model;
 
+import java.util.LinkedList;
+import java.util.List;
+
 public class Statistics {
 
   private int totalNumberOfUsers;
   private int importedUsers;
   private int notImportedUsers;
   private int skippedUsers;
+  private List<Integer> collapsedKatottg = new LinkedList<>();
 
   public Statistics() {
   }
@@ -29,12 +33,13 @@ public class Statistics {
   public Statistics(int totalNumberOfUsers) {
     this.totalNumberOfUsers = totalNumberOfUsers;
   }
-  
+
   public Statistics addStatistics(Statistics statistics) {
     this.totalNumberOfUsers += statistics.totalNumberOfUsers;
     this.importedUsers += statistics.importedUsers;
     this.notImportedUsers += statistics.notImportedUsers;
     this.skippedUsers += statistics.skippedUsers;
+    this.collapsedKatottg.addAll(statistics.collapsedKatottg);
     return this;
   }
 
@@ -84,5 +89,17 @@ public class Statistics {
 
   public void addSkippedUsers(int skippedUsers) {
     this.skippedUsers += skippedUsers;
-  }  
+  }
+
+  public List<Integer> getCollapsedKatottg() {
+    return collapsedKatottg;
+  }
+
+  public void setCollapsedKatottg(List<Integer> collapsedKatottg) {
+    this.collapsedKatottg = collapsedKatottg;
+  }
+
+  public void addCollapsedKatottg(List<Integer> collapsedKatottg) {
+    this.collapsedKatottg.addAll(collapsedKatottg);
+  }
 }

@@ -18,7 +18,6 @@ package com.epam.digital.data.platform.user.service;
 
 import static com.epam.digital.data.platform.utils.MockCsvUser.user;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 import com.epam.digital.data.platform.user.config.ValidationConfig;
@@ -65,7 +64,7 @@ class ValidationServiceTest {
 
       var result = validationService.validate(List.of(user));
 
-      assertEquals(1, result.size());
+      assertThat(result).hasSize(1);
       assertThat(result.get(0).get(0)).isEqualTo(
           "User does not contain DRFO");
     }
@@ -81,7 +80,7 @@ class ValidationServiceTest {
 
       var result = validationService.validate(List.of(user));
 
-      assertEquals(1, result.size());
+      assertThat(result).hasSize(1);
       assertThat(result.get(0).get(0)).isEqualTo(
           "User does not contain EDRPOU");
     }
@@ -93,7 +92,7 @@ class ValidationServiceTest {
 
       var result = validationService.validate(List.of(user));
 
-      assertEquals(1, result.size());
+      assertThat(result).hasSize(1);
       assertThat(result.get(0).get(0)).isEqualTo(
           "EDRPOU must contain only digits");
     }
@@ -109,7 +108,7 @@ class ValidationServiceTest {
 
       var result = validationService.validate(List.of(user));
 
-      assertEquals(1, result.size());
+      assertThat(result).hasSize(1);
       assertThat(result.get(0).get(0)).isEqualTo(
           "User does not contain FullName");
     }
@@ -125,7 +124,7 @@ class ValidationServiceTest {
 
       var result = validationService.validate(List.of(user));
 
-      assertEquals(1, result.size());
+      assertThat(result).hasSize(1);
       assertThat(result.get(0).get(0)).isEqualTo(
           "User must contain at least one role, but contains zero");
     }
@@ -137,7 +136,7 @@ class ValidationServiceTest {
 
       var result = validationService.validate(List.of(user));
 
-      assertEquals(1, result.size());
+      assertThat(result).hasSize(1);
       assertThat(result.get(0).get(0)).isEqualTo(
           "Role cannot be null or empty string");
     }
@@ -150,7 +149,7 @@ class ValidationServiceTest {
 
       var result = validationService.validate(List.of(user));
 
-      assertEquals(1, result.size());
+      assertThat(result).hasSize(1);
       assertThat(result.get(0).get(0)).isEqualTo(
           "Realm does not contain role: head-officer");
     }

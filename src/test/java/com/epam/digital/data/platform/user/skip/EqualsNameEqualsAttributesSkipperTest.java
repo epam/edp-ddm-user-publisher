@@ -18,7 +18,6 @@ package com.epam.digital.data.platform.user.skip;
 
 import static com.epam.digital.data.platform.utils.MockUser.user;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -49,7 +48,7 @@ class EqualsNameEqualsAttributesSkipperTest {
 
     var result = skipper.check(usersForImport, new SkippingResult());
 
-    assertEquals(1, result.size());
+    assertThat(result).hasSize(1);
     assertThat(result.get(1).get(0)).isEqualTo(
         "The user with name 'some-user-name' will be skipped because there is already a user with "
             + "the same name and attributes (drfo, edrpou, fullName)");
