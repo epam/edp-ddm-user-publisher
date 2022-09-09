@@ -18,7 +18,6 @@ package com.epam.digital.data.platform.user.validate.fullname;
 
 import static com.epam.digital.data.platform.utils.MockCsvUser.user;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.epam.digital.data.platform.user.model.ValidationResult;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,7 +45,7 @@ class FullNameCharactersValidatorTest {
     var result = validator.validate(1, user().fullName("!@#$%^&*()/|\\\":.,+<>[]{}=").build(),
         new ValidationResult());
 
-    assertEquals(1, result.size());
+    assertThat(result).hasSize(1);
     assertThat(result.get(1).get(0)).isEqualTo(
         "FullName contains invalid symbols: {!, @, #, $, %, ^, &, *, (, ), /, |, \\, \", :, ., ,, +, <, >, [, ], {, }, =}");
   }

@@ -18,12 +18,16 @@ package com.epam.digital.data.platform.user.config;
 
 import com.epam.digital.data.platform.user.provider.ExistingRolesProvider;
 import com.epam.digital.data.platform.user.validate.Validator;
+import com.epam.digital.data.platform.user.validate.custom.CustomAttributeLengthValidator;
+import com.epam.digital.data.platform.user.validate.custom.CustomAttributePresenceValidator;
 import com.epam.digital.data.platform.user.validate.drfo.DrfoCharactersValidator;
 import com.epam.digital.data.platform.user.validate.drfo.DrfoPresenceValidator;
 import com.epam.digital.data.platform.user.validate.edrpou.EdrpouCharactersValidator;
 import com.epam.digital.data.platform.user.validate.edrpou.EdrpouPresenceValidator;
 import com.epam.digital.data.platform.user.validate.fullname.FullNameCharactersValidator;
 import com.epam.digital.data.platform.user.validate.fullname.FullNamePresenceValidator;
+import com.epam.digital.data.platform.user.validate.katottg.KatottgCharactersValidator;
+import com.epam.digital.data.platform.user.validate.katottg.KatottgCountValidator;
 import com.epam.digital.data.platform.user.validate.role.RoleCountValidator;
 import com.epam.digital.data.platform.user.validate.role.RolePresenceInRealmValidator;
 import com.epam.digital.data.platform.user.validate.role.RolePresenceValidator;
@@ -60,6 +64,20 @@ public class ValidationConfig {
     validator
         .linkWith(new RolePresenceValidator())
         .linkWith(new RolePresenceInRealmValidator(existingRolesProvider));
+    return validator;
+  }
+
+  @Bean
+  public Validator katottgValidator() {
+    var validator = new KatottgCountValidator();
+    validator.linkWith(new KatottgCharactersValidator());
+    return validator;
+  }
+
+  @Bean
+  public Validator customAttributeValidator() {
+    var validator = new CustomAttributePresenceValidator();
+    validator.linkWith(new CustomAttributeLengthValidator());
     return validator;
   }
 }

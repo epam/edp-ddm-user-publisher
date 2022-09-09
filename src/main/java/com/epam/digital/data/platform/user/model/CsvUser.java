@@ -16,16 +16,36 @@
 
 package com.epam.digital.data.platform.user.model;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
 
 public class CsvUser {
+
+  // mandatory fields
+  public static final String FULL_NAME = "fullName";
+  public static final String EDRPOU = "edrpou";
+  public static final String DRFO = "drfo";
+  public static final String REALM_ROLES = "Realm Roles";
+  public static final String KATOTTG = "KATOTTG";
+
+  public final Map<String, Consumer<String>> mandatoryFieldsString = Map.of(
+      FULL_NAME, this::setFullName,
+      EDRPOU, this::setEdrpou,
+      DRFO, this::setDrfo
+  );
+
+  public final Map<String, Consumer<List<String>>> mandatoryFieldsList = Map.of(
+      REALM_ROLES, this::setRealmRoles,
+      KATOTTG, this::setKatottg
+  );
 
   private String drfo;
   private String edrpou;
   private String fullName;
-  @JsonAlias({"Realm Roles"})
   private List<String> realmRoles;
+  private List<String> katottg;
+  private Map<String, List<String>> customAttributes;
 
   public String getDrfo() {
     return drfo;
@@ -57,5 +77,21 @@ public class CsvUser {
 
   public void setRealmRoles(List<String> realmRoles) {
     this.realmRoles = realmRoles;
+  }
+
+  public List<String> getKatottg() {
+    return katottg;
+  }
+
+  public void setKatottg(List<String> katottg) {
+    this.katottg = katottg;
+  }
+
+  public Map<String, List<String>> getCustomAttributes() {
+    return customAttributes;
+  }
+
+  public void setCustomAttributes(Map<String, List<String>> customAttributes) {
+    this.customAttributes = customAttributes;
   }
 }

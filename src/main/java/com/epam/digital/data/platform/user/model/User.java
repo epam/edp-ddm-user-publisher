@@ -16,25 +16,31 @@
 
 package com.epam.digital.data.platform.user.model;
 
+import static com.epam.digital.data.platform.user.model.CsvUser.DRFO;
+import static com.epam.digital.data.platform.user.model.CsvUser.EDRPOU;
+import static com.epam.digital.data.platform.user.model.CsvUser.FULL_NAME;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class User {
 
   private String username;
-  private Attributes attributes;
+  private final Map<String, List<String>> attributes;
   private List<String> realmRoles;
   private String lastName;
   boolean enabled = true;
 
   public User() {
-    attributes = new Attributes();
+    attributes = new HashMap<>();
   }
 
   public User(User other) {
     this.username = other.username;
-    this.attributes = new Attributes(other.attributes);
+    this.attributes = new HashMap<>(other.attributes);
     realmRoles = other.realmRoles == null ? null : new ArrayList<>(other.realmRoles);
     this.setLastName(other.getLastName());
     this.enabled = other.enabled;
@@ -48,19 +54,7 @@ public class User {
     this.username = username;
   }
 
-  public void setDrfo(List<String> drfo) {
-    this.attributes.drfo = drfo;
-  }
-
-  public void setEdrpou(List<String> edrpou) {
-    this.attributes.edrpou = edrpou;
-  }
-
-  public void setFullName(List<String> fullName) {
-    this.attributes.fullName = fullName;
-  }
-
-  public Attributes getAttributes() {
+  public Map<String, List<String>> getAttributes() {
     return attributes;
   }
 
@@ -97,57 +91,13 @@ public class User {
       return false;
     }
     User user = (User) o;
-    return Objects.equals(attributes, user.attributes);
+    return Objects.equals(attributes.get(FULL_NAME), user.attributes.get(FULL_NAME))
+        && Objects.equals(attributes.get(EDRPOU), user.attributes.get(EDRPOU))
+        && Objects.equals(attributes.get(DRFO), user.attributes.get(DRFO));
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(attributes);
-  }
-
-  public class Attributes {
-
-    private List<String> drfo;
-    private List<String> edrpou;
-    private List<String> fullName;
-
-    public Attributes() {
-    }
-
-    public Attributes(Attributes other) {
-      drfo = other.drfo == null ? null : new ArrayList<>(other.drfo);
-      edrpou = other.edrpou == null ? null : new ArrayList<>(other.edrpou);
-      fullName = other.fullName == null ? null : new ArrayList<>(other.fullName);
-    }
-
-    public List<String> getDrfo() {
-      return drfo;
-    }
-
-    public List<String> getEdrpou() {
-      return edrpou;
-    }
-
-    public List<String> getFullName() {
-      return fullName;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-      if (this == o) {
-        return true;
-      }
-      if (o == null || getClass() != o.getClass()) {
-        return false;
-      }
-      Attributes that = (Attributes) o;
-      return Objects.equals(drfo, that.drfo) && Objects.equals(edrpou, that.edrpou)
-          && Objects.equals(fullName, that.fullName);
-    }
-
-    @Override
-    public int hashCode() {
-      return Objects.hash(drfo, edrpou, fullName);
-    }
+    return Objects.hash(attributes.get(FULL_NAME), attributes.get(EDRPOU), attributes.get(DRFO));
   }
 }

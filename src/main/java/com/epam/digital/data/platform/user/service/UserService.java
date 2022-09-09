@@ -16,38 +16,34 @@
 
 package com.epam.digital.data.platform.user.service;
 
-import com.epam.digital.data.platform.user.exception.MappingException;
+import static com.epam.digital.data.platform.user.model.CsvUser.DRFO;
+import static com.epam.digital.data.platform.user.model.CsvUser.EDRPOU;
+import static com.epam.digital.data.platform.user.model.CsvUser.FULL_NAME;
+import static com.epam.digital.data.platform.user.model.CsvUser.KATOTTG;
+import static com.epam.digital.data.platform.user.util.Constants.FIRST_USER_OFFSET;
+
 import com.epam.digital.data.platform.user.model.CsvUser;
 import com.epam.digital.data.platform.user.model.EnumerableUser;
 import com.epam.digital.data.platform.user.model.User;
-import com.fasterxml.jackson.databind.MappingIterator;
-import com.fasterxml.jackson.databind.ObjectReader;
-import java.io.IOException;
+import com.epam.digital.data.platform.user.util.KatottgUtil;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.stereotype.Component;
 
 @Component
 public class UserService {
 
-  public static final String UTF8_BOM = "\uFEFF";
+  private final CsvParser csvParser;
 
-  private final ObjectReader objectReader;
-
-  public UserService(ObjectReader objectReader) {
-    this.objectReader = objectReader;
+  public UserService(CsvParser csvParser) {
+    this.csvParser = csvParser;
   }
 
   public List<CsvUser> getCsvUsers(String csv) {
-    csv = removeUtf8BomIfExist(csv);
-    try {
-      MappingIterator<CsvUser> iterator = objectReader.readValues(csv);
-      return iterator.readAll();
-    } catch (IOException e) {
-      throw new MappingException("Unable to map csv file to List<User>", e);
-    }
+    return csvParser.getCsvUsers(csv);
   }
 
   public List<User> convertToKeycloakUsers(List<CsvUser> csvUsers) {
@@ -69,23 +65,42 @@ public class UserService {
     return result;
   }
 
-  private String removeUtf8BomIfExist(String s) {
-    if (s.startsWith(UTF8_BOM)) {
-      s = s.substring(1);
+  public List<Integer> collapseKatottg(List<EnumerableUser> users) {
+    List<Integer> result = new ArrayList<>();
+    for (var user : users) {
+      List<String> katottgs = user.getAttributes().get(KATOTTG);
+      if (katottgs != null) {
+        int beforeFiltering = katottgs.size();
+        user.getAttributes().put(KATOTTG, KatottgUtil.retainPrefixes(katottgs));
+        int afterFiltering = user.getAttributes().get(KATOTTG).size();
+        if (beforeFiltering != afterFiltering) {
+          result.add(user.getSerialNumber() + FIRST_USER_OFFSET);
+        }
+      }
     }
-    return s;
+    return result;
   }
 
   private User getKeycloakUser(CsvUser csvUser) {
     var user = new User();
-    user.setDrfo(List.of(csvUser.getDrfo()));
-    user.setEdrpou(List.of(csvUser.getEdrpou()));
-    user.setFullName(List.of(csvUser.getFullName()));
-    user.setRealmRoles(csvUser.getRealmRoles());
+    putIfPresent(user.getAttributes(), DRFO, List.of(csvUser.getDrfo()));
+    putIfPresent(user.getAttributes(), EDRPOU, List.of(csvUser.getEdrpou()));
+    putIfPresent(user.getAttributes(), FULL_NAME, List.of(csvUser.getFullName()));
+    putIfPresent(user.getAttributes(), KATOTTG, csvUser.getKatottg());
 
+    user.getAttributes()
+        .putAll(csvUser.getCustomAttributes() == null ? Map.of() : csvUser.getCustomAttributes());
+
+    user.setRealmRoles(csvUser.getRealmRoles());
     user.setLastName(csvUser.getFullName());
     user.setUsername(createUsername(csvUser));
     return user;
+  }
+
+  private void putIfPresent(Map<String, List<String>> map, String key, List<String> value) {
+    if (value != null && !value.isEmpty()) {
+      map.put(key, value);
+    }
   }
 
   private String createUsername(CsvUser user) {

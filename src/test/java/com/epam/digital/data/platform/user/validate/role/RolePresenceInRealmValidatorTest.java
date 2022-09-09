@@ -18,7 +18,6 @@ package com.epam.digital.data.platform.user.validate.role;
 
 import static com.epam.digital.data.platform.utils.MockCsvUser.user;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -57,7 +56,7 @@ class RolePresenceInRealmValidatorTest {
     var result = validator.validate(1,
         user().realmRoles(List.of("officer", "head-officer")).build(), new ValidationResult());
 
-    assertEquals(1, result.size());
+    assertThat(result).hasSize(1);
     assertThat(result.get(1).get(0)).isEqualTo("Realm does not contain role: head-officer");
   }
 }

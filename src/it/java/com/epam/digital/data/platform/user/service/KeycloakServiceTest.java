@@ -25,7 +25,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
@@ -103,7 +102,7 @@ class KeycloakServiceTest {
     customizeGetAllUser(mockKeycloakServer, 200, "json/all-users.json");
 
     // when
-    assertFalse(keycloakService.getAllUsers().isEmpty());
+    assertThat(keycloakService.getAllUsers()).isNotEmpty();
 
     // then
     mockKeycloakServer.verify(1,
@@ -151,7 +150,7 @@ class KeycloakServiceTest {
     // given
     customizeImportUsers(mockKeycloakServer, 401, "json/partial-import-response.json");
 
-    var fileObject = getFileObject("json/users.csv");
+    var fileObject = getFileObject("json/users-katottg.csv");
     when(fileService.getFile(fileObject.getId())).thenReturn(fileObject);
     var contentStr = new String(fileObject.getContent(), StandardCharsets.UTF_8);
     when(vaultService.decrypt(contentStr)).thenReturn(contentStr);

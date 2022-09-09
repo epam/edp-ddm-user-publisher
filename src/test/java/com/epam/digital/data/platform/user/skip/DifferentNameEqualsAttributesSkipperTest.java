@@ -16,9 +16,9 @@
 
 package com.epam.digital.data.platform.user.skip;
 
+import static com.epam.digital.data.platform.user.model.CsvUser.DRFO;
 import static com.epam.digital.data.platform.utils.MockUser.user;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -46,7 +46,7 @@ class DifferentNameEqualsAttributesSkipperTest {
     when(existingUsersProvider.getExistingUsers()).thenReturn(existingUsers);
 
     var user2 = mockUser();
-    user2.setDrfo(List.of("22222222"));
+    user2.getAttributes().put(DRFO, List.of("22222222"));
 
     var user3 = mockUser();
     user3.setUsername("another-user-name");
@@ -55,9 +55,9 @@ class DifferentNameEqualsAttributesSkipperTest {
 
     var result = skipper.check(usersForImport, new SkippingResult());
 
-    assertEquals(1, result.size());
+    assertThat(result).hasSize(1);
     assertThat(result.get(2).get(0)).isEqualTo(
-        "The user will be skipped because there is already user with the same attributes " 
+        "The user will be skipped because there is already user with the same attributes "
             + "(drfo, edrpou, fullName) but different name. Name of existing user: [some-user-name]");
   }
 

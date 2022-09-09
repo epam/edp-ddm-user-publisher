@@ -5,7 +5,7 @@
 
 	<groupId>com.epam.digital.data.platform</groupId>
 	<artifactId>user-publisher</artifactId>
-	<version>1.7.0</version>
+	<version>1.8.0</version>
 
 	<name>user-publisher</name>
 	<description>Application for importing users from csv file to keycloak</description>

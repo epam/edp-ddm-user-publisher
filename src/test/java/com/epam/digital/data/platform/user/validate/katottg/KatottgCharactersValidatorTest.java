@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.epam.digital.data.platform.user.validate.role;
+package com.epam.digital.data.platform.user.validate.katottg;
 
 import static com.epam.digital.data.platform.utils.MockCsvUser.user;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -23,40 +23,39 @@ import com.epam.digital.data.platform.user.model.ValidationResult;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
-class RoleCountValidatorTest {
+class KatottgCharactersValidatorTest {
 
-  private RoleCountValidator validator;
+  private KatottgCharactersValidator validator;
 
   @BeforeEach
   void beforeEach() {
-    validator = new RoleCountValidator();
+    validator = new KatottgCharactersValidator();
   }
 
   @Test
-  void happyPathDoesNotWriteAnyErrors() {
+  void notWriteAnyErrorsWhenKatottgsCorrect() {
     var result = validator.validate(1,
-        user().realmRoles(List.of("officer", "head-officer")).build(),
+        user().katottg(List.of("UA03000000000012345", "UA03020000000012345", "UA")).build(),
         new ValidationResult());
 
     assertThat(result).isEmpty();
   }
 
-  @Test
-  void writeErrorRolesIsNull() {
-    var result = validator.validate(1, user().build(), new ValidationResult());
-
-    assertThat(result).hasSize(1);
-    assertThat(result.get(1).get(0)).isEqualTo("List of Roles is null");
-  }
-
-  @Test
-  void writeErrorRolesMustHaveAtLeastOneValue() {
-    var result = validator.validate(1, user().realmRoles(List.of()).build(),
+  @ParameterizedTest
+  @ValueSource(strings = {"UA1234567890123456", "UA123456789012345678", "UA 1234567890123456",
+      "UB1234567890123456", "UA12345678901r23467", "ua12345678901234567", "UA1"})
+  void writeErrorIfIncorrectFormatOfAnyKatottgCodeInList(String arg) {
+    var result = validator.validate(1, user().katottg(List.of(arg)).build(),
         new ValidationResult());
 
     assertThat(result).hasSize(1);
-    assertThat(result.get(1).get(0)).isEqualTo(
-        "User must contain at least one role, but contains zero");
+    assertThat(result.get(1).get(0))
+        .isEqualTo(
+            "Incorrect KATOTTG code. KATOTTG should starts from UA and have 0 or 17 digits, " 
+                + "like this: 'UA12345678901234567' or 'UA'. But you are trying to import code: '"
+                + arg + "' in wrong format");
   }
 }

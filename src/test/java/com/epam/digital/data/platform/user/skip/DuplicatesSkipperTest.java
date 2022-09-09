@@ -16,6 +16,7 @@
 
 package com.epam.digital.data.platform.user.skip;
 
+import static com.epam.digital.data.platform.user.model.CsvUser.DRFO;
 import static com.epam.digital.data.platform.utils.MockUser.user;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -33,7 +34,7 @@ class DuplicatesSkipperTest {
   void shouldFindAllDuplicates() {
     var user = mockUser();
     var user2 = mockUser();
-    user2.setDrfo(List.of("22222222"));
+    user2.getAttributes().put(DRFO, List.of("22222222"));
 
     var result = skipper.check(List.of(user, user2, user, user2, user2),
         new SkippingResult());

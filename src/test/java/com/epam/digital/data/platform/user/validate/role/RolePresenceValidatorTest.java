@@ -18,7 +18,6 @@ package com.epam.digital.data.platform.user.validate.role;
 
 import static com.epam.digital.data.platform.utils.MockCsvUser.user;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.epam.digital.data.platform.user.model.ValidationResult;
 import java.util.ArrayList;
@@ -50,7 +49,7 @@ class RolePresenceValidatorTest {
 
     var result = validator.validate(1, user().realmRoles(roles).build(), new ValidationResult());
 
-    assertEquals(1, result.size());
+    assertThat(result).hasSize(1);
     assertThat(result.get(1).get(0)).isEqualTo("Role cannot be null or empty string");
   }
 
@@ -61,7 +60,7 @@ class RolePresenceValidatorTest {
 
     var result = validator.validate(1, user().realmRoles(roles).build(), new ValidationResult());
 
-    assertEquals(1, result.size());
+    assertThat(result).hasSize(1);
     assertThat(result.get(1).get(0)).isEqualTo("Role cannot be null or empty string");
   }
 }

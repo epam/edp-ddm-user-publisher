@@ -17,6 +17,7 @@
 package com.epam.digital.data.platform.user.audit;
 
 import static com.epam.digital.data.platform.starter.audit.model.EventType.SYSTEM_EVENT;
+import static com.epam.digital.data.platform.user.model.CsvUser.KATOTTG;
 import static com.epam.digital.data.platform.user.util.TestUtils.getContent;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
@@ -85,7 +86,7 @@ class UserImportAuditFacadeTest {
   }
 
   @Test
-  void happyPath() throws IOException {
+  void shouldCreateCorrectAuditEvent() throws IOException {
     var keycloakResponse = getKeycloakResponse("json/partial-import-response.json");
     auditFacade.sendAudit(keycloakResponse, mockUsers(),
         new FileObject("fileId", "fileName", "content".getBytes()));
@@ -103,10 +104,35 @@ class UserImportAuditFacadeTest {
     assertThat(resultAuditEvent.getUserInfo().getUserName()).isEqualTo(USER_NAME);
     assertThat(resultAuditEvent.getUserInfo().getUserDrfo()).isEqualTo(USER_DRFO);
     assertThat(resultAuditEvent.getUserInfo().getUserKeycloakId()).isEqualTo(USER_KEYCLOAK_ID);
-    assertThat(resultAuditEvent.getContext()).isEqualTo(expectedContext());
+    assertThat(resultAuditEvent.getContext()).isEqualTo(expectedContext(null));
   }
 
-  private Map<String, Object> expectedContext() {
+
+  @Test
+  void shouldCreateCorrectAuditEventWithKatottg() throws IOException {
+    var keycloakResponse = getKeycloakResponse("json/partial-import-response.json");
+    auditFacade.sendAudit(keycloakResponse,
+        mockUsersKatottg(List.of("UA12345678901234567", "UA03000000000012345")),
+        new FileObject("fileId", "fileName", "content".getBytes()));
+
+    verify(auditService).sendAudit(auditEventCaptor.capture());
+    var resultAuditEvent = auditEventCaptor.getValue();
+
+    assertThat(resultAuditEvent.getRequestId()).isEqualTo(REQUEST_ID);
+    assertThat(resultAuditEvent.getApplication()).isEqualTo("Keycloak");
+    assertThat(resultAuditEvent.getName()).isEqualTo("USER_CREATE");
+    assertThat(resultAuditEvent.getSourceInfo().getApplication()).isNotBlank();
+    assertThat(resultAuditEvent.getEventType()).isEqualTo(SYSTEM_EVENT);
+    assertThat(resultAuditEvent.getCurrentTime()).isNotNull();
+
+    assertThat(resultAuditEvent.getUserInfo().getUserName()).isEqualTo(USER_NAME);
+    assertThat(resultAuditEvent.getUserInfo().getUserDrfo()).isEqualTo(USER_DRFO);
+    assertThat(resultAuditEvent.getUserInfo().getUserKeycloakId()).isEqualTo(USER_KEYCLOAK_ID);
+    assertThat(resultAuditEvent.getContext())
+        .isEqualTo(expectedContext(List.of("UA12345678901234567", "UA03000000000012345")));
+  }
+
+  private Map<String, Object> expectedContext(List<String> katottgs) {
     Map<String, Object> context = new HashMap<>();
     context.put("sourceFileName", "fileName");
     context.put("realmId", REALM_ID);
@@ -120,6 +146,9 @@ class UserImportAuditFacadeTest {
     context.put("userId", "5d107a36-b9e9-406e-b4c3-d1c48933222e");
     context.put("enabled", true);
     context.put("username", "9d57e74a81d1220a6fbb8bbafa3fa4b4236ac64cd42b165d473ab565d9132db3");
+    if (katottgs != null) {
+      context.put("katottg", katottgs);
+    }
     return context;
   }
 
@@ -153,5 +182,11 @@ class UserImportAuditFacadeTest {
     user2.setUsername("9d57e74a81d1220a6fbb8bbafa3fa4b4236ac64cd42b165d473ab565d9132db3");
 
     return List.of(user1, user2);
+  }
+
+  private List<User> mockUsersKatottg(List<String> katottgs) {
+    var users = mockUsers();
+    users.get(1).getAttributes().put(KATOTTG, katottgs);
+    return users;
   }
 }
