@@ -23,6 +23,7 @@
 		<spring.boot.version>2.6.1</spring.boot.version>
 		<jackson.version>2.13.4</jackson.version>
 		<spring.cloud.version>2021.0.0</spring.cloud.version>
+		<snakeyaml.version>1.33</snakeyaml.version>
 		<sonar.coverage.exclusions>
 			**/config/*,
 			**/model/*,
@@ -65,6 +66,11 @@
 				<groupId>com.fasterxml.jackson.dataformat</groupId>
 				<artifactId>jackson-dataformat-csv</artifactId>
 				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.yaml</groupId>
+				<artifactId>snakeyaml</artifactId>
+				<version>${snakeyaml.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
