@@ -19,12 +19,15 @@ package com.epam.digital.data.platform.user.service;
 import static com.epam.digital.data.platform.user.util.Util.listToString;
 import static com.epam.digital.data.platform.user.util.Util.trimToNull;
 
+import com.epam.digital.data.platform.user.exception.FileHasDuplicateColumnsException;
 import com.epam.digital.data.platform.user.exception.MappingException;
 import com.epam.digital.data.platform.user.model.CsvUser;
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.databind.ObjectReader;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -43,6 +46,7 @@ public class CsvParser {
 
   public List<CsvUser> getCsvUsers(String csv) {
     csv = removeUtf8BomIfExist(csv);
+    checkingHeaderDuplicates(csv);
     try {
       MappingIterator<CsvMap> iterator = csvMapper.readValues(csv);
       return iterator.readAll().stream()
@@ -50,6 +54,22 @@ public class CsvParser {
           .collect(Collectors.toList());
     } catch (IOException e) {
       throw new MappingException("Unable to map csv file to List<User>", e);
+    }
+  }
+
+  private void checkingHeaderDuplicates(String csv) {
+    var headers = csv.split("\n", 2);
+    var listOfHeaders = Arrays.stream(headers[0].split(";"))
+        .map(String::trim).collect(Collectors.toList());
+
+    var temp = new HashSet<String>();
+    var duplicates = listOfHeaders.stream()
+        .filter(header -> !temp.add(header))
+        .collect(Collectors.toSet());
+
+    if (!duplicates.isEmpty()) {
+      throw new FileHasDuplicateColumnsException(
+          "The following columns have duplicates: " + duplicates);
     }
   }
 

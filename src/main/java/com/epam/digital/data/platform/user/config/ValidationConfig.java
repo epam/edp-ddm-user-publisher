@@ -18,6 +18,7 @@ package com.epam.digital.data.platform.user.config;
 
 import com.epam.digital.data.platform.user.provider.ExistingRolesProvider;
 import com.epam.digital.data.platform.user.validate.Validator;
+import com.epam.digital.data.platform.user.validate.custom.CustomAttributeCharactersValidator;
 import com.epam.digital.data.platform.user.validate.custom.CustomAttributeLengthValidator;
 import com.epam.digital.data.platform.user.validate.custom.CustomAttributePresenceValidator;
 import com.epam.digital.data.platform.user.validate.drfo.DrfoCharactersValidator;
@@ -77,7 +78,9 @@ public class ValidationConfig {
   @Bean
   public Validator customAttributeValidator() {
     var validator = new CustomAttributePresenceValidator();
-    validator.linkWith(new CustomAttributeLengthValidator());
+    validator
+        .linkWith(new CustomAttributeLengthValidator())
+        .linkWith(new CustomAttributeCharactersValidator());
     return validator;
   }
 }
