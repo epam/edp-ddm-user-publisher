@@ -18,31 +18,21 @@ package com.epam.digital.data.platform.user.validate.fullname;
 
 import com.epam.digital.data.platform.user.model.CsvUser;
 import com.epam.digital.data.platform.user.model.ValidationResult;
-import com.epam.digital.data.platform.user.validate.Validator;
-import java.util.ArrayList;
+import com.epam.digital.data.platform.user.validate.CharactersValidator;
 import java.util.List;
 
-public class FullNameCharactersValidator extends Validator {
+public class FullNameCharactersValidator extends CharactersValidator {
 
   private static final String VALID_CHARACTERS_PATTERN = "[ '`’\\p{IsCyrillic}\\p{IsLatin}\\p{Digit}\\-]+";
 
   @Override
   public ValidationResult validate(int userSequenceNumber, CsvUser user, ValidationResult results) {
     if (!user.getFullName().matches(VALID_CHARACTERS_PATTERN)) {
-      List<String> invalidCharacters = getInvalidCharacters(user.getFullName());
-      results.add(userSequenceNumber, "FullName contains invalid symbols: {" + String.join(", ", invalidCharacters) + "}");
+      List<String> invalidCharacters = 
+          getInvalidCharacters(user.getFullName(), VALID_CHARACTERS_PATTERN);
+      results.add(userSequenceNumber,
+          "FullName contains invalid symbols: {" + String.join(", ", invalidCharacters) + "}");
     }
     return validateNext(userSequenceNumber, user, results);
-  }
-  
-  private List<String> getInvalidCharacters(String str) {
-    List<String> invalidCharacters = new ArrayList<>();
-    for(int i = 0; i < str.length(); i++) {
-      var character = Character.toString(str.charAt(i));
-      if(!character.matches(VALID_CHARACTERS_PATTERN)) {
-        invalidCharacters.add(character);
-      }
-    }
-    return invalidCharacters;
   }
 }
