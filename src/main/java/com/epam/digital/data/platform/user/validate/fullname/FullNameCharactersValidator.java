@@ -24,7 +24,7 @@ import java.util.List;
 
 public class FullNameCharactersValidator extends Validator {
 
-  private static final String VALID_CHARACTERS_PATTERN = "[ \\p{IsCyrillic}\\p{IsLatin}\\p{Digit}\\-]+";
+  private static final String VALID_CHARACTERS_PATTERN = "[ '`’\\p{IsCyrillic}\\p{IsLatin}\\p{Digit}\\-]+";
 
   @Override
   public ValidationResult validate(int userSequenceNumber, CsvUser user, ValidationResult results) {
