@@ -34,7 +34,7 @@ class FullNameCharactersValidatorTest {
 
   @Test
   void happyPathDoesNotWriteAnyErrors() {
-    var result = validator.validate(1, user().fullName("11 Бб ---Qq").build(),
+    var result = validator.validate(1, user().fullName("11 Бб ---Q'`’q").build(),
         new ValidationResult());
 
     assertThat(result).isEmpty();
