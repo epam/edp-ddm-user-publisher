@@ -17,8 +17,12 @@
 package com.epam.digital.data.platform.user.audit;
 
 import static com.epam.digital.data.platform.starter.audit.model.EventType.SYSTEM_EVENT;
+import static com.epam.digital.data.platform.user.model.CsvUser.DRFO;
+import static com.epam.digital.data.platform.user.model.CsvUser.EDRPOU;
+import static com.epam.digital.data.platform.user.model.CsvUser.FULL_NAME;
 import static com.epam.digital.data.platform.user.model.CsvUser.KATOTTG;
 import static com.epam.digital.data.platform.user.util.Constants.USER_CREATE_EVENT_NAME;
+import static com.epam.digital.data.platform.user.util.Util.trimToNull;
 
 import com.epam.digital.data.platform.starter.audit.model.AuditEvent;
 import com.epam.digital.data.platform.starter.audit.model.AuditSourceInfo;
@@ -98,7 +102,14 @@ public class UserImportAuditFacade extends AbstractAuditFacade {
     Map<String, Object> context = new HashMap<>();
     putIfNotNull(context, "userId", result.getId());
     putIfNotNull(context, "username", result.getResourceName());
-    putIfNotNull(context, "katottg", user.getAttributes().get(KATOTTG));
+    
+    var customAttributes = new HashMap<> (user.getAttributes());
+    putIfNotNull(context, "katottg", customAttributes.remove(KATOTTG)); // well known custom attribute
+    customAttributes.remove(DRFO); // mandatory custom attribute has sensitive info
+    customAttributes.remove(EDRPOU); // mandatory custom attribute has sensitive info
+    customAttributes.remove(FULL_NAME); // mandatory custom attribute has sensitive info
+    putIfNotNull(context, "customAttributes", trimToNull(customAttributes)); // other custom attributes
+    
     putIfNotNull(context, "enabled", true);
     putIfNotNull(context, "realmId", realmInfoProvider.getRealmId());
     putIfNotNull(context, "realmName", realmInfoProvider.getRealmName());
