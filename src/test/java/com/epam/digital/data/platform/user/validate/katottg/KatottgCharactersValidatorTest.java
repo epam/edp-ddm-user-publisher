@@ -55,7 +55,7 @@ class KatottgCharactersValidatorTest {
     assertThat(result.get(1).get(0))
         .isEqualTo(
             "Incorrect KATOTTG code. KATOTTG should starts from UA and have 0 or 17 digits, " 
-                + "like this: 'UA12345678901234567' or 'UA'. But you are trying to import code: '"
+                + "like this: 'UA' or 'UA12345678901234567'. But you are trying to import code '"
                 + arg + "' in wrong format");
   }
 }
