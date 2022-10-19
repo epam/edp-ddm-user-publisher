@@ -207,12 +207,13 @@ public class UserPublishingService {
   }
 
   private void printStatistics(Statistics statistics) {
-    log.info(
-        "The file has been processed. Total users in file: {}. Successfully imported: {}. " 
-            + "Skipped: {}. Failed to import: {}. KATOTTG codes which are already included in the " 
-            + "higher levels of code were detected and removed in the following rows: {}", 
+    log.info("The file has been processed. Total users in file: {}. Successfully imported: {}. " 
+            + "Skipped: {}. Failed to import: {}", 
         statistics.getTotalNumberOfUsers(), statistics.getImportedUsers(), 
-        statistics.getSkippedUsers(), statistics.getNotImportedUsers(), 
-        statistics.getCollapsedKatottg());
+        statistics.getSkippedUsers(), statistics.getNotImportedUsers());
+    if(!statistics.getCollapsedKatottg().isEmpty()) {
+      log.info("KATOTTG codes which are already included in the higher levels of code were " 
+          + "detected and removed in the following rows: {}", statistics.getCollapsedKatottg());
+    }
   }
 }
