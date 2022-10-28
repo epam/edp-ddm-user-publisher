@@ -28,7 +28,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class UserPublisherApplication implements ApplicationRunner {
 
-  private final Logger log = LoggerFactory.getLogger(UserPublisherApplication.class);
+  private final Logger log = LoggerFactory.getLogger("UserPublisherApplication");
 
   private final UserPublishingService userPublishingService;
 
@@ -43,15 +43,15 @@ public class UserPublisherApplication implements ApplicationRunner {
 
   @Override
   public void run(ApplicationArguments args) {
-    var fileName = getFileName(args);
-    log.info("Start importing users to keycloak from file {}", fileName);
-    userPublishingService.publish(fileName);
+    var fileId = getFileId(args);
+    log.info("Start importing users to keycloak from file with id '{}'", fileId);
+    userPublishingService.publish(fileId);
   }
 
-  private String getFileName(ApplicationArguments args) {
+  private String getFileId(ApplicationArguments args) {
     return Optional.ofNullable(args.getOptionValues("id"))
-        .filter(fileNameList -> fileNameList.size() == 1)
-        .map(fileNameList -> fileNameList.get(0))
-        .orElseThrow(() -> new IllegalArgumentException("Invalid file name specification"));
+        .filter(fileIdList -> fileIdList.size() == 1)
+        .map(fileIdList -> fileIdList.get(0))
+        .orElseThrow(() -> new IllegalArgumentException("Invalid file id specification"));
   }
 }
