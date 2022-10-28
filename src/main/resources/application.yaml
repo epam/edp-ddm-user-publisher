@@ -55,7 +55,7 @@ audit:
       truststore-certificate: ${SSL_CLUSTER_CERTIFICATE}
           
 logging:
-  config: classpath:log4j2-json-console.xml
+  config: classpath:log4j2-json-console-logger.xml
   level:
     com.epam.digital.data.platform.user.feign.KeycloakClient: DEBUG
 

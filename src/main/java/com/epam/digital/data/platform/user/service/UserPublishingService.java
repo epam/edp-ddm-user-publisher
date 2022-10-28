@@ -72,7 +72,7 @@ public class UserPublishingService {
 
   public void publish(String id) {
     if(id.isEmpty()) {
-      log.info("Nothing to do");
+      log.info("FileId is empty string. Nothing to do");
       return;
     }
     // get file 
