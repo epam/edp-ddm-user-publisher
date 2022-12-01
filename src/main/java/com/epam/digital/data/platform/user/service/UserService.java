@@ -26,6 +26,7 @@ import com.epam.digital.data.platform.user.model.CsvUser;
 import com.epam.digital.data.platform.user.model.EnumerableUser;
 import com.epam.digital.data.platform.user.model.User;
 import com.epam.digital.data.platform.user.util.KatottgUtil;
+import com.epam.digital.data.platform.user.util.UserNameUtils;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -92,7 +93,8 @@ public class UserService {
         .putAll(csvUser.getCustomAttributes() == null ? Map.of() : csvUser.getCustomAttributes());
 
     user.setRealmRoles(csvUser.getRealmRoles());
-    user.setLastName(csvUser.getFullName());
+    user.setFirstName(UserNameUtils.getFirstAndMiddleName(csvUser.getFullName()));
+    user.setLastName(UserNameUtils.getLastName(csvUser.getFullName()));
     user.setUsername(createUsername(csvUser));
     return user;
   }

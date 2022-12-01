@@ -83,6 +83,24 @@ class UserServiceTest {
       assertThat(user.getUsername()).isNotNull();
     }
   }
+  
+  @Test
+  void shouldSeparateFullNameToFirstNameAndLastName() {
+    var csv = new String(content, StandardCharsets.UTF_8);
+    var csvUsers = userService.getCsvUsers(csv);
+    var users = userService.convertToKeycloakUsers(csvUsers);
+
+    assertThat(users.get(0).getFirstName()).isEqualTo("Василь Леонідович");
+    assertThat(users.get(0).getLastName()).isEqualTo("Сидоренко");
+    assertThat(users.get(1).getFirstName()).isEqualTo("Степан Степанович");
+    assertThat(users.get(1).getLastName()).isEqualTo("Степанченко");
+    assertThat(users.get(2).getFirstName()).isEqualTo("Гайяне Мухамедівна");
+    assertThat(users.get(2).getLastName()).isEqualTo("Алмаз-заде");
+    assertThat(users.get(3).getFirstName()).isEqualTo("Іон");
+    assertThat(users.get(3).getLastName()).isEqualTo("Петру");
+    assertThat(users.get(4).getFirstName()).isEqualTo("Алибабаевич");
+    assertThat(users.get(4).getLastName()).isEqualTo("Василий");
+  }
 
   @Test
   void shouldConvertUsersToEnumerableUsersSequentially() {
