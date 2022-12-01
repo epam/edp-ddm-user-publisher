@@ -31,6 +31,7 @@ public class User {
   private String username;
   private final Map<String, List<String>> attributes;
   private List<String> realmRoles;
+  private String firstName;
   private String lastName;
   boolean enabled = true;
 
@@ -42,6 +43,7 @@ public class User {
     this.username = other.username;
     this.attributes = new HashMap<>(other.attributes);
     realmRoles = other.realmRoles == null ? null : new ArrayList<>(other.realmRoles);
+    this.setFirstName(other.getFirstName());
     this.setLastName(other.getLastName());
     this.enabled = other.enabled;
   }
@@ -64,6 +66,14 @@ public class User {
 
   public void setRealmRoles(List<String> realmRoles) {
     this.realmRoles = realmRoles;
+  }
+
+  public String getFirstName() {
+    return firstName;
+  }
+
+  public void setFirstName(String firstName) {
+    this.firstName = firstName;
   }
 
   public String getLastName() {
