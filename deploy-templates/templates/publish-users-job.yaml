@@ -17,7 +17,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: publish-users-job
-          image: "{{ .Values.image.name }}:{{ .Values.image.tag }}"
+          image: "{{ .Values.image.name }}:{{ .Values.image.version }}"
           imagePullPolicy: IfNotPresent
           command:
             - sh
