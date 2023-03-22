@@ -12,6 +12,7 @@ spec:
       labels:
         name: {{ .Values.data.jobName }}
         app: user-publisher
+        collect.logs: "json"
     spec:
       serviceAccountName: {{ .Values.serviceAccount.name }}
       restartPolicy: Never
