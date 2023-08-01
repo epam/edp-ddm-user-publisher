@@ -9,6 +9,8 @@ metadata:
 spec:
   template:
     metadata:
+      annotations:
+        sidecar.istio.io/inject: 'false'
       labels:
         name: {{ .Values.data.jobName }}
         app: user-publisher
