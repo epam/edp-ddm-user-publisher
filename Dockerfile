@@ -1,4 +1,4 @@
-FROM nexus-docker-registry.apps.cicd2.mdtu-ddm.projects.epam.com/openjdk:11.0.16-jre-slim
+FROM adoptopenjdk/openjdk11:alpine-jre
 ENV USER_UID=1001 \
     USER_NAME=user-publisher
 RUN addgroup --gid ${USER_UID} ${USER_NAME} \

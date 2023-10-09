@@ -32,11 +32,15 @@ import com.epam.digital.data.platform.user.validate.katottg.KatottgCountValidato
 import com.epam.digital.data.platform.user.validate.role.RoleCountValidator;
 import com.epam.digital.data.platform.user.validate.role.RolePresenceInRealmValidator;
 import com.epam.digital.data.platform.user.validate.role.RolePresenceValidator;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class ValidationConfig {
+
+  @Value("${keycloak.edrCheck}")
+  private boolean edrCheck;
 
   @Bean
   public Validator drfoValidator() {
@@ -47,8 +51,10 @@ public class ValidationConfig {
 
   @Bean
   public Validator edrpouValidator() {
-    var validator = new EdrpouPresenceValidator();
-    validator.linkWith(new EdrpouCharactersValidator());
+    var validator = new EdrpouCharactersValidator();
+    if(edrCheck) {
+      validator.linkWith(new EdrpouPresenceValidator());
+    }
     return validator;
   }
 

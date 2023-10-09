@@ -21,6 +21,7 @@ keycloak:
   clientId: client_id
   clientSecret: client_secret
   batchSize: 2
+  edrCheck: true
   
 jobinfo:
   requestId: request_id

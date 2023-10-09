@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 EPAM Systems.
+ * Copyright 2023 EPAM Systems.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ public class UserInfoProvider {
   private final String userAccessToken;
   private final TokenParser tokenParser;
 
-  public UserInfoProvider(@Value("${user.access-token}") String userAccessToken,
+  public UserInfoProvider(@Value("${user.access-token:user_access_token}") String userAccessToken,
       TokenParser tokenParser) {
     this.userAccessToken = userAccessToken;
     this.tokenParser = tokenParser;

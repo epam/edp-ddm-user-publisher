@@ -48,6 +48,10 @@ keycloak:
     secretName: keycloak-realm-officer-import-users-client-secret
     clientSecret: clientSecret
 
+userAccessToken:
+  secretName: user-import-access-token
+  key: userAccessToken
+
 vault:
   key: registry-regulation-management-encryption-key
   decryptionRole: user-publisher-job-decryption-only-role

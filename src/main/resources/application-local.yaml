@@ -16,6 +16,7 @@ keycloak:
   clientId: import-users-job
   clientSecret: clientSecret
   batchSize: 100
+  edrCheck: true
 
 user:
   access-token: user_access_token

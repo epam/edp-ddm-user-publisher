@@ -16,6 +16,7 @@
 
 package com.epam.digital.data.platform.user.validate.edrpou;
 
+import com.amazonaws.util.StringUtils;
 import com.epam.digital.data.platform.user.model.CsvUser;
 import com.epam.digital.data.platform.user.model.ValidationResult;
 import com.epam.digital.data.platform.user.validate.Validator;
@@ -26,7 +27,7 @@ public class EdrpouCharactersValidator extends Validator {
 
   @Override
   public ValidationResult validate(int userSequenceNumber, CsvUser user, ValidationResult results) {
-    if (!user.getEdrpou().matches(ALL_DIGITS_PATTERN)) {
+    if (!StringUtils.isNullOrEmpty(user.getEdrpou()) && !user.getEdrpou().matches(ALL_DIGITS_PATTERN)) {
       results.add(userSequenceNumber, "EDRPOU must contain only digits");
     }
     return validateNext(userSequenceNumber, user, results);

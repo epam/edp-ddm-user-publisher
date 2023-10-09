@@ -35,6 +35,7 @@ keycloak:
   clientId: ${CLIENT_ID}
   clientSecret: ${CLIENT_SECRET}
   batchSize: ${BATCH_SIZE}
+  edrCheck: ${EDR_CHECK}
   
 user:
   access-token: ${USER_ACCESS_TOKEN}

@@ -22,6 +22,7 @@ import static com.epam.digital.data.platform.user.model.CsvUser.FULL_NAME;
 import static com.epam.digital.data.platform.user.model.CsvUser.KATOTTG;
 import static com.epam.digital.data.platform.user.util.Constants.FIRST_USER_OFFSET;
 
+import com.amazonaws.util.StringUtils;
 import com.epam.digital.data.platform.user.model.CsvUser;
 import com.epam.digital.data.platform.user.model.EnumerableUser;
 import com.epam.digital.data.platform.user.model.User;
@@ -85,7 +86,8 @@ public class UserService {
   private User getKeycloakUser(CsvUser csvUser) {
     var user = new User();
     putIfPresent(user.getAttributes(), DRFO, List.of(csvUser.getDrfo()));
-    putIfPresent(user.getAttributes(), EDRPOU, List.of(csvUser.getEdrpou()));
+    putIfPresent(user.getAttributes(), EDRPOU,
+        StringUtils.isNullOrEmpty(csvUser.getEdrpou()) ? List.of() : List.of(csvUser.getEdrpou()));
     putIfPresent(user.getAttributes(), FULL_NAME, List.of(csvUser.getFullName()));
     putIfPresent(user.getAttributes(), KATOTTG, csvUser.getKatottg());
 

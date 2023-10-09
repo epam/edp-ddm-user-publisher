@@ -16,37 +16,16 @@
 
 package com.epam.digital.data.platform.user.service;
 
-import static com.epam.digital.data.platform.utils.MockCsvUser.user;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
 
-import com.epam.digital.data.platform.user.config.ValidationConfig;
 import com.epam.digital.data.platform.user.model.CsvUser;
-import com.epam.digital.data.platform.user.provider.ExistingRolesProvider;
 import java.util.List;
-import java.util.Set;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.TestPropertySource;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {ValidationConfig.class, ValidationService.class})
-class ValidationServiceTest {
-
-  @MockBean
-  ExistingRolesProvider existingRolesProvider;
-  @Autowired
-  ValidationService validationService;
-
-  @BeforeEach
-  void beforeEach() {
-    when(existingRolesProvider.getExistingRoles()).thenReturn(Set.of("officer"));
-  }
+@TestPropertySource(properties = "keycloak.edrCheck=true")
+class ValidationServiceTest extends BaseValidationServiceTest {
 
   @Test
   void happyPathDoesNotWriteAnyErrors() {
@@ -155,13 +134,5 @@ class ValidationServiceTest {
     }
   }
 
-  private CsvUser mockUser() {
-    return
-        user()
-            .drfo("11112222")
-            .edrpou("33334444")
-            .fullName("some-full-name")
-            .realmRoles(List.of("officer"))
-            .build();
-  }
+
 }

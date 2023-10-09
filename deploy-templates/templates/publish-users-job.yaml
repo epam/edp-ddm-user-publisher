@@ -79,6 +79,11 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.keycloak.secret.secretName }}
                   key: {{ .Values.keycloak.secret.clientSecret }}
+            - name: USER_ACCESS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.userAccessToken.secretName }}
+                  key: {{ .Values.userAccessToken.key }}
             - name: KEYCLOAK_REALM
               value: "{{ include "keycloak.officerRealm" . }}"
             - name: BATCH_SIZE
@@ -119,5 +124,7 @@ spec:
               value: {{ .Values.vault.key }}
             - name: VAULT_DECRYPTION_ROLE
               value: {{ .Values.vault.decryptionRole }}
+            - name: EDR_CHECK
+              value: "{{ not .Values.portals.officer.individualAccessEnabled }}"
 
 {{- end }}
